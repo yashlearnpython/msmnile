@@ -1,8 +1,23 @@
 # Enable AVB 2.0
 BOARD_AVB_ENABLE := true
 
+# Enable chain partition for system, to facilitate system-only OTA in Treble.
+BOARD_AVB_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_SYSTEM_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_SYSTEM_ROLLBACK_INDEX := 0
+BOARD_AVB_SYSTEM_ROLLBACK_INDEX_LOCATION := 1
+
+TARGET_DEFINES_DALVIK_HEAP := true
 $(call inherit-product, device/qcom/common/common64.mk)
-$(call inherit-product, frameworks/native/build/phone-xhdpi-2048-dalvik-heap.mk)
+
+#Inherit all except heap growth limit from phone-xhdpi-2048-dalvik-heap.mk
+PRODUCT_PROPERTY_OVERRIDES  += \
+	dalvik.vm.heapstartsize=8m \
+	dalvik.vm.heapsize=512m \
+	dalvik.vm.heaptargetutilization=0.75 \
+	dalvik.vm.heapminfree=512k \
+	dalvik.vm.heapmaxfree=8m
+
 
 PRODUCT_NAME := msmnile
 PRODUCT_DEVICE := msmnile
@@ -13,6 +28,9 @@ PRODUCT_MODEL := msmnile for arm64
 TARGET_USES_AOSP := false
 TARGET_USES_AOSP_FOR_AUDIO := false
 TARGET_USES_QCOM_BSP := false
+
+# RRO configuration
+TARGET_USES_RRO := true
 
 #Default vendor image configuration
 ifeq ($(ENABLE_VENDOR_IMAGE),)
@@ -147,7 +165,7 @@ PRODUCT_PACKAGES += \
 
 # Fingerprint feature
 PRODUCT_COPY_FILES += \
-    frameworks/native/data/etc/android.hardware.fingerprint.xml:system/etc/permissions/android.hardware.fingerprint.xml \
+    frameworks/native/data/etc/android.hardware.fingerprint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.fingerprint.xml \
 
 DEVICE_MANIFEST_FILE := device/qcom/msmnile/manifest.xml
 DEVICE_MATRIX_FILE   := device/qcom/common/compatibility_matrix.xml
@@ -170,8 +188,15 @@ PRODUCT_COPY_FILES += \
     device/qcom/msmnile/init.qti.qseecomd.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.qti.qseecomd.sh \
     device/qcom/msmnile/init.qti.getbootdevice.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.qti.getbootdevice.sh
 
+# Strongbox support
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.strongbox_keystore.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.strongbox_keystore.xml
+
 # MSM IRQ Balancer configuration file
 PRODUCT_COPY_FILES += device/qcom/msmnile/msm_irqbalance.conf:$(TARGET_COPY_OUT_VENDOR)/etc/msm_irqbalance.conf
+
+# Powerhint configuration file
+PRODUCT_COPY_FILES += device/qcom/msmnile/powerhint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/powerhint.xml
 
 # Camera configuration file. Shared by passthrough/binderized camera HAL
 PRODUCT_PACKAGES += camera.device@3.2-impl
@@ -245,7 +270,9 @@ ENABLE_KM_4_0 := true
 #Should be enabled only on msmnile
 ENABLE_STRONGBOX_KM := true
 
+ifneq ($(strip $(TARGET_USES_RRO)),true)
 DEVICE_PACKAGE_OVERLAYS += device/qcom/msmnile/overlay
+endif
 
 
 ENABLE_VENDOR_RIL_SERVICE := true
@@ -268,3 +295,6 @@ TARGET_MOUNT_POINTS_SYMLINKS := false
 ifeq ($(ENABLE_VENDOR_IMAGE), true)
  VENDOR_SECURITY_PATCH := 2018-06-05
 endif
+
+TARGET_USES_MKE2FS := true
+$(call inherit-product, build/make/target/product/product_launched_with_p.mk)

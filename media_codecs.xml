@@ -207,6 +207,8 @@ Only the three quirks included above are recognized at this point:
             <Limit name="bitrate" range="1-160000000" />
             <Limit name="frame-rate" range="1-480" />
             <Limit name="concurrent-instances" max="16" />
+            <Limit name="quality" range="0-100" default="80" />
+            <Feature name="bitrate-modes" value="VBR,CBR,CQ" />
         </MediaCodec>
         <!-- Video Software -->
         <MediaCodec name="OMX.qcom.video.encoder.h263sw" type="video/3gpp" >
@@ -259,7 +261,7 @@ Only the three quirks included above are recognized at this point:
             <Limit name="frame-rate" range="1-60" />
             <Feature name="adaptive-playback" />
             <Feature name="secure-playback" required="true" />
-            <Limit name="concurrent-instances" max="6" />
+            <Limit name="concurrent-instances" max="3" />
         </MediaCodec>
         <MediaCodec name="OMX.qcom.video.decoder.mpeg2" type="video/mpeg2" >
             <Quirk name="requires-allocate-on-input-ports" />
@@ -284,7 +286,7 @@ Only the three quirks included above are recognized at this point:
             <Limit name="frame-rate" range="1-30" />
             <Feature name="adaptive-playback" />
             <Feature name="secure-playback" required="true" />
-            <Limit name="concurrent-instances" max="6" />
+            <Limit name="concurrent-instances" max="3" />
         </MediaCodec>
         <MediaCodec name="OMX.qcom.video.decoder.vp8" type="video/x-vnd.on2.vp8" >
             <Quirk name="requires-allocate-on-input-ports" />
@@ -321,7 +323,7 @@ Only the three quirks included above are recognized at this point:
             <Limit name="frame-rate" range="1-60" />
             <Feature name="adaptive-playback" />
             <Feature name="secure-playback" required="true" />
-            <Limit name="concurrent-instances" max="6" />
+            <Limit name="concurrent-instances" max="3" />
         </MediaCodec>
         <MediaCodec name="OMX.qcom.video.decoder.hevc" type="video/hevc" >
             <Quirk name="requires-allocate-on-input-ports" />
@@ -346,7 +348,7 @@ Only the three quirks included above are recognized at this point:
             <Limit name="frame-rate" range="1-60" />
             <Feature name="adaptive-playback" />
             <Feature name="secure-playback" required="true" />
-            <Limit name="concurrent-instances" max="6" />
+            <Limit name="concurrent-instances" max="3" />
         </MediaCodec>
         <!-- Video Software -->
         <MediaCodec name="OMX.qti.video.decoder.h263sw" type="video/3gpp" >
