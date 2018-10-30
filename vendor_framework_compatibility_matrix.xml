@@ -80,7 +80,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </hal>
     <hal format="hidl" optional="true">
         <name>vendor.display.config</name>
-        <version>1.0-2</version>
+        <version>1.0-5</version>
         <interface>
              <name>IDisplayConfig</name>
              <instance>default</instance>
@@ -462,31 +462,11 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <name>IMlsDap</name>
             <instance>mlsdaphal</instance>
         </interface>
+        <interface>
+            <name>IMlsVnc</name>
+            <instance>mlsvnchal</instance>
+        </interface>
    </hal>
-   <hal format="hidl" optional="true">
-        <name>vendor.display.config</name>
-        <version>1.4</version>
-        <interface>
-            <name>IDisplayConfig</name>
-            <instance>default</instance>
-        </interface>
-  </hal>
-  <hal format="hidl" optional="true">
-        <name>vendor.qti.hardware.improvetouch.blobmanager</name>
-        <version>1.0</version>
-        <interface>
-            <name>IBlobManager</name>
-            <instance>BlobManagerService</instance>
-        </interface>
-    </hal>
-  <hal format="hidl" optional="true">
-        <name>vendor.qti.hardware.improvetouch.gesturemanager</name>
-        <version>1.0</version>
-        <interface>
-            <name>IGestureManager</name>
-            <instance>GestureManagerService</instance>
-        </interface>
-    </hal>
     <hal format="hidl" optional="true">
         <name>vendor.qti.hardware.improvetouch.touchcompanion</name>
         <version>1.0</version>
@@ -524,7 +504,15 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        <version>1.0</version>
        <interface>
            <name>IRadioConfig</name>
-           <instance>radioconfig</instance>
+           <instance>default</instance>
+       </interface>
+   </hal>
+   <hal format="hidl" optional="true">
+       <name>vendor.qti.hardware.wifi.wifilearner</name>
+       <version>1.0</version>
+       <interface>
+           <name>IWifiStats</name>
+           <instance>wifiStats</instance>
        </interface>
    </hal>
 </compatibility-matrix>
