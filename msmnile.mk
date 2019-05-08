@@ -3,7 +3,7 @@
 #### Turning this flag to TRUE will enable dynamic partition/super image creation.
 
 #ifneq ($(TARGET_FWK_SUPPORTS_FULL_VALUEADDS),true)
-BOARD_DYNAMIC_PARTITION_ENABLE :=false
+BOARD_DYNAMIC_PARTITION_ENABLE ?=false
 #endif
 
 ifneq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
@@ -15,7 +15,7 @@ BOARD_AVB_SYSTEM_ROLLBACK_INDEX_LOCATION := 1
 else
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 PRODUCT_PACKAGES += fastbootd
-PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_dynamic.qcom:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom
+PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_dynamic_partition.qcom:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom
 BOARD_AVB_VBMETA_SYSTEM := system
 BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
 BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
@@ -25,9 +25,14 @@ endif
 
 #####Dynamic partition Handling
 
-# For QSSI builds, we skip building the system image. Instead we build the
-# "non-system" images (that we support).
+# For QSSI builds, we skip building the system image (when value adds are enabled).
+# Instead we build the "non-system" images (that we support).
+
+ifeq ($(TARGET_FWK_SUPPORTS_FULL_VALUEADDS),true)
 PRODUCT_BUILD_SYSTEM_IMAGE := false
+else
+PRODUCT_BUILD_SYSTEM_IMAGE := true
+endif
 PRODUCT_BUILD_SYSTEM_OTHER_IMAGE := false
 PRODUCT_BUILD_VENDOR_IMAGE := true
 PRODUCT_BUILD_PRODUCT_IMAGE := false
@@ -47,12 +52,6 @@ BOARD_AVB_ENABLE := true
 PRODUCT_SOONG_NAMESPACES += \
     hardware/google/av \
     hardware/google/interfaces
-
-# Enable chain partition for system, to facilitate system-only OTA in Treble.
-BOARD_AVB_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
-BOARD_AVB_SYSTEM_ALGORITHM := SHA256_RSA2048
-BOARD_AVB_SYSTEM_ROLLBACK_INDEX := 0
-BOARD_AVB_SYSTEM_ROLLBACK_INDEX_LOCATION := 1
 
 TARGET_DEFINES_DALVIK_HEAP := true
 $(call inherit-product, device/qcom/qssi/common64.mk)
@@ -168,8 +167,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/seccomp/codec2.software.ext.policy:$(TARGET_COPY_OUT)/etc/seccomp_policy/codec2.software.ext.policy \
 
 PRODUCT_BOOT_JARS += tcmiface
-PRODUCT_BOOT_JARS += telephony-ext
-PRODUCT_PACKAGES += telephony-ext
 
 TARGET_ENABLE_QC_AV_ENHANCEMENTS := false
 
@@ -374,7 +371,6 @@ DEVICE_PACKAGE_OVERLAYS += device/qcom/msmnile/overlay
 endif
 
 
-ENABLE_VENDOR_RIL_SERVICE := true
 #Enable vndk-sp Libraries
 PRODUCT_PACKAGES += vndk_package
 
