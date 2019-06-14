@@ -2,9 +2,9 @@
 ####
 #### Turning this flag to TRUE will enable dynamic partition/super image creation.
 
-#ifneq ($(TARGET_FWK_SUPPORTS_FULL_VALUEADDS),true)
-BOARD_DYNAMIC_PARTITION_ENABLE ?=false
-#endif
+ifeq ($(TARGET_FWK_SUPPORTS_FULL_VALUEADDS),true)
+BOARD_DYNAMIC_PARTITION_ENABLE ?=true
+endif
 
 ifneq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
 # Enable chain partition for system, to facilitate system-only OTA in Treble.
@@ -15,6 +15,8 @@ BOARD_AVB_SYSTEM_ROLLBACK_INDEX_LOCATION := 1
 else
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 PRODUCT_PACKAGES += fastbootd
+# Add default implementation of fastboot HAL.
+PRODUCT_PACKAGES += android.hardware.fastboot@1.0-impl-mock
 PRODUCT_COPY_FILES += $(LOCAL_PATH)/fstab_dynamic_partition.qcom:$(TARGET_COPY_OUT_RAMDISK)/fstab.qcom
 BOARD_AVB_VBMETA_SYSTEM := system
 BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
@@ -56,6 +58,7 @@ PRODUCT_SOONG_NAMESPACES += \
     hardware/google/interfaces
 
 TARGET_DEFINES_DALVIK_HEAP := true
+TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
 $(call inherit-product, device/qcom/qssi/common64.mk)
 
 #Inherit all except heap growth limit from phone-xhdpi-2048-dalvik-heap.mk
@@ -170,8 +173,6 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_BOOT_JARS += tcmiface
 
-TARGET_ENABLE_QC_AV_ENHANCEMENTS := false
-
 #ifneq ($(strip $(QCPATH)),)
 #    PRODUCT_BOOT_JARS += WfdCommon
 #endif
@@ -274,14 +275,6 @@ PRODUCT_PACKAGES += \
     android.hardware.configstore@1.1-service \
     android.hardware.broadcastradio@1.0-impl
 
-# FBE support
-PRODUCT_COPY_FILES += \
-    device/qcom/msmnile/init.qti.qseecomd.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.qti.qseecomd.sh
-
-# Strongbox support
-PRODUCT_COPY_FILES += \
-    frameworks/native/data/etc/android.hardware.strongbox_keystore.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.strongbox_keystore.xml
-
 # MSM IRQ Balancer configuration file
 PRODUCT_COPY_FILES += device/qcom/msmnile/msm_irqbalance.conf:$(TARGET_COPY_OUT_VENDOR)/etc/msm_irqbalance.conf
 
@@ -360,13 +353,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_FULL_TREBLE_OVERRIDE := true
 PRODUCT_VENDOR_MOVE_ENABLED := true
 PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
-
-KMGK_USE_QTI_SERVICE := true
-
-#Enable KEYMASTER 4.0
-ENABLE_KM_4_0 := true
-#Should be enabled only on msmnile
-ENABLE_STRONGBOX_KM := true
 
 ifneq ($(strip $(TARGET_USES_RRO)),true)
 DEVICE_PACKAGE_OVERLAYS += device/qcom/msmnile/overlay

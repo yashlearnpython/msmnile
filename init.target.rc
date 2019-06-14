@@ -43,9 +43,6 @@ on init
     write /sys/module/qpnp_rtc/parameters/poweron_alarm 1
     wait /dev/block/platform/soc/1d84000.ufshc
     symlink /dev/block/platform/soc/1d84000.ufshc /dev/block/bootdevice
-    start vendor.qseecomd
-    start keymaster-4-0
-    start keymaster-sb-4-0
 
 on early-fs
     start vold
@@ -116,6 +113,7 @@ on boot
     setprop vendor.usb.rmnet.func.name "gsi"
     setprop vendor.usb.rmnet.inst.name "rmnet"
     setprop vendor.usb.dpl.inst.name "dpl"
+    setprop vendor.usb.qdss.inst.name "qdss"
     setprop vendor.usb.controller a600000.dwc3
     setprop sys.usb.configfs 1
 
@@ -163,12 +161,6 @@ on charger
     start vendor.power_off_alarm
     setprop sys.usb.controller a600000.dwc3
     setprop sys.usb.configfs 1
-
-
-service vendor.qseecomd /vendor/bin/qseecomd
-    class core
-    user root
-    group root
 
 service vendor.spdaemon /vendor/bin/spdaemon
     class core
@@ -256,7 +248,3 @@ service vendor.tlocd /vendor/bin/tloc_daemon
     user system
     group drmrpc gps net_raw
 
-service smcinvoked /system/bin/smcinvoked
-    class main
-    user system
-    group system
