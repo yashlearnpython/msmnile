@@ -9,8 +9,10 @@ ifeq ($(TARGET_FWK_SUPPORTS_FULL_VALUEADDS),true)
   # Enable Dynamic partitions only for Q new launch devices.
   ifeq ($(SHIPPING_API_LEVEL),29)
     BOARD_DYNAMIC_PARTITION_ENABLE := true
+    PRODUCT_SHIPPING_API_LEVEL := 29
   else ifeq ($(SHIPPING_API_LEVEL),28)
     BOARD_DYNAMIC_PARTITION_ENABLE := false
+    $(call inherit-product, build/make/target/product/product_launched_with_p.mk)
   endif
 endif
 
@@ -103,6 +105,11 @@ ifeq ($(GENERIC_ODM_IMAGE),true)
   PRODUCT_PROPERTY_OVERRIDES += debug.media.codec2=2
   PRODUCT_PROPERTY_OVERRIDES += debug.stagefright.ccodec=4
   PRODUCT_PROPERTY_OVERRIDES += debug.stagefright.omx_default_rank=1000
+else
+  $(warning "Enabling codec2.0 SW only for non-generic odm build variant")
+  #Rank OMX SW codecs lower than OMX HW codecs
+  PRODUCT_PROPERTY_OVERRIDES += debug.stagefright.omx_default_rank.sw-audio=1
+  PRODUCT_PROPERTY_OVERRIDES += debug.stagefright.omx_default_rank=0
 endif
 
 ###########
@@ -125,6 +132,7 @@ TARGET_USES_QMAA_OVERRIDE_CAMERA  := false
 TARGET_USES_QMAA_OVERRIDE_GFX     := false
 TARGET_USES_QMAA_OVERRIDE_WFD     := false
 TARGET_USES_QMAA_OVERRIDE_DATA    := false
+TARGET_USES_QMAA_OVERRIDE_GPS     := false
 
 ###########
 #QMAA flags ends
@@ -136,7 +144,7 @@ TARGET_USES_RRO := true
 ###QMAA Indicator Start###
 
 #Full QMAA HAL List
-QMAA_HAL_LIST := audio video camera display sensors
+QMAA_HAL_LIST := audio video camera display sensors gps
 
 #Indicator for each enabled QMAA HAL for this target. Each tech team
 #locally verified their QMAA HAL and ensure code is updated/merged,
@@ -367,8 +375,6 @@ TARGET_USES_MKE2FS := true
 PRODUCT_PROPERTY_OVERRIDES += \
 ro.crypto.volume.filenames_mode = "aes-256-cts" \
 ro.crypto.allow_encrypt_override = true
-
-$(call inherit-product, build/make/target/product/product_launched_with_p.mk)
 
 ifneq ($(GENERIC_ODM_IMAGE),true)
     PRODUCT_COPY_FILES += device/qcom/msmnile/manifest-qva.xml:$(TARGET_COPY_OUT_ODM)/etc/vintf/manifest.xml
