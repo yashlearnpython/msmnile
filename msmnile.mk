@@ -1,9 +1,19 @@
 #####Dynamic partition Handling
 ####
-#### Turning this flag to TRUE will enable dynamic partition/super image creation.
+#### Turning BOARD_DYNAMIC_PARTITION_ENABLE flag to TRUE will enable dynamic partition/super image creation.
 
 ifeq ($(TARGET_FWK_SUPPORTS_FULL_VALUEADDS),true)
-BOARD_DYNAMIC_PARTITION_ENABLE ?=true
+  # By default this target is new-launch config, so set the default shipping level to 29 (if not set explictly earlier)
+  SHIPPING_API_LEVEL ?= 29
+
+  # Enable Dynamic partitions only for Q new launch devices.
+  ifeq ($(SHIPPING_API_LEVEL),29)
+    BOARD_DYNAMIC_PARTITION_ENABLE := true
+    PRODUCT_SHIPPING_API_LEVEL := 29
+  else ifeq ($(SHIPPING_API_LEVEL),28)
+    BOARD_DYNAMIC_PARTITION_ENABLE := false
+    $(call inherit-product, build/make/target/product/product_launched_with_p.mk)
+  endif
 endif
 
 ifneq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
@@ -58,6 +68,11 @@ PRODUCT_SOONG_NAMESPACES += \
     hardware/google/av \
     hardware/google/interfaces
 
+# privapp-permissions whitelisting (To Fix CTS :privappPermissionsMustBeEnforced)
+ifeq ($(TARGET_FWK_SUPPORTS_FULL_VALUEADDS),true)
+PRODUCT_PROPERTY_OVERRIDES += ro.control_privapp_permissions=enforce
+endif
+
 TARGET_DEFINES_DALVIK_HEAP := true
 TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
 $(call inherit-product, device/qcom/qssi/common64.mk)
@@ -95,6 +110,11 @@ ifeq ($(GENERIC_ODM_IMAGE),true)
   PRODUCT_PROPERTY_OVERRIDES += debug.media.codec2=2
   PRODUCT_PROPERTY_OVERRIDES += debug.stagefright.ccodec=4
   PRODUCT_PROPERTY_OVERRIDES += debug.stagefright.omx_default_rank=1000
+else
+  $(warning "Enabling codec2.0 SW only for non-generic odm build variant")
+  #Rank OMX SW codecs lower than OMX HW codecs
+  PRODUCT_PROPERTY_OVERRIDES += debug.stagefright.omx_default_rank.sw-audio=1
+  PRODUCT_PROPERTY_OVERRIDES += debug.stagefright.omx_default_rank=0
 endif
 
 ###########
@@ -117,6 +137,7 @@ TARGET_USES_QMAA_OVERRIDE_CAMERA  := false
 TARGET_USES_QMAA_OVERRIDE_GFX     := false
 TARGET_USES_QMAA_OVERRIDE_WFD     := false
 TARGET_USES_QMAA_OVERRIDE_DATA    := false
+TARGET_USES_QMAA_OVERRIDE_GPS     := false
 
 ###########
 #QMAA flags ends
@@ -128,7 +149,7 @@ TARGET_USES_RRO := true
 ###QMAA Indicator Start###
 
 #Full QMAA HAL List
-QMAA_HAL_LIST := audio video camera display sensors
+QMAA_HAL_LIST := audio video camera display sensors gps
 
 #Indicator for each enabled QMAA HAL for this target. Each tech team
 #locally verified their QMAA HAL and ensure code is updated/merged,
@@ -177,12 +198,6 @@ PRODUCT_BOOT_JARS += tcmiface
 #ifneq ($(strip $(QCPATH)),)
 #    PRODUCT_BOOT_JARS += WfdCommon
 #endif
-
-ifeq ($(TARGET_FWK_SUPPORTS_FULL_VALUEADDS),true)
-#BT library
-PRODUCT_PROPERTY_OVERRIDES += \
-    ro.bluetooth.library_name=libbluetooth_qti.so
-endif
 
 PRODUCT_PACKAGES += android.hardware.media.omx@1.0-impl
 
@@ -249,27 +264,23 @@ PRODUCT_PACKAGES += \
 
 #Healthd packages
 PRODUCT_PACKAGES += \
-    android.hardware.health@1.0-impl \
-    android.hardware.health@1.0-convert \
-    android.hardware.health@1.0-service \
     libhealthd.msm
 
 # Fingerprint feature
 PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.fingerprint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.fingerprint.xml \
 
+# Ipsec_tunnels feature
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.software.ipsec_tunnels.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.ipsec_tunnels.xml \
+
 DEVICE_MANIFEST_FILE := device/qcom/msmnile/manifest.xml
 DEVICE_MATRIX_FILE   := device/qcom/common/compatibility_matrix.xml
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/msmnile/framework_manifest.xml
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := vendor/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
 
-
-#ANT+ stack
-PRODUCT_PACKAGES += \
-    AntHalService \
-    libantradio \
-    antradio_app \
-    libvolumelistener
+#audio related module
+PRODUCT_PACKAGES += libvolumelistener
 
 # Display/Graphics
 PRODUCT_PACKAGES += \
@@ -291,10 +302,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.contexthub@1.0-impl.generic \
     android.hardware.contexthub@1.0-service
-
-# system prop for Bluetooth SOC type
-PRODUCT_PROPERTY_OVERRIDES += \
-    vendor.qcom.bluetooth.soc=cherokee
 
 #vendor prop to enable advanced network scanning
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -377,8 +384,6 @@ TARGET_USES_MKE2FS := true
 PRODUCT_PROPERTY_OVERRIDES += \
 ro.crypto.volume.filenames_mode = "aes-256-cts" \
 ro.crypto.allow_encrypt_override = true
-
-$(call inherit-product, build/make/target/product/product_launched_with_p.mk)
 
 ifneq ($(GENERIC_ODM_IMAGE),true)
     PRODUCT_COPY_FILES += device/qcom/msmnile/manifest-qva.xml:$(TARGET_COPY_OUT_ODM)/etc/vintf/manifest.xml

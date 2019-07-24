@@ -102,7 +102,7 @@ on boot
 # Add a cpuset for the camera daemon
 # We want all cores for camera
     mkdir /dev/cpuset/camera-daemon
-    write /dev/cpuset/camera-daemon/cpus 0-3
+    write /dev/cpuset/camera-daemon/cpus 0-7
     write /dev/cpuset/camera-daemon/mems 0
     chown cameraserver cameraserver /dev/cpuset/camera-daemon
     chown cameraserver cameraserver /dev/cpuset/camera-daemon/tasks
@@ -187,21 +187,6 @@ service vendor.lowi /vendor/bin/sscrpcd
    class core
    user system
    group system
-
-## imsqmidaemon starts with root and UID will be downgraded to RADIO.
-service vendor.imsqmidaemon /vendor/bin/imsqmidaemon
-    class main
-    user radio
-    socket ims_qmid stream 0660 system radio
-    group radio log diag
-
-# imsdatadaemon starts with root and UID will be downgraded to RADIO.
-service vendor.imsdatadaemon /vendor/bin/imsdatadaemon
-    class main
-    user radio
-    socket ims_datad stream 0660 system radio
-    group radio wifi inet log diag
-    disabled
 
 service vendor.mdm_helper /vendor/bin/mdm_helper
     class core
