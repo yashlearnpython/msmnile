@@ -3,6 +3,9 @@
 # Product-specific compile-time definitions.
 #
 
+#Generate DTBO image
+BOARD_KERNEL_SEPARATED_DTBO := true
+
 ### Dynamic partition Handling
 ifneq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
 BOARD_VENDORIMAGE_PARTITION_SIZE := 1073741824
@@ -18,8 +21,19 @@ BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
 BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 6438256640
 BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor odm
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x06000000
+BOARD_EXT4_SHARE_DUP_BLOCKS := true
+    ifeq ($(BOARD_KERNEL_SEPARATED_DTBO),true)
+        # Enable DTBO for recovery image
+        BOARD_INCLUDE_RECOVERY_DTBO := true
+    endif
 endif
 ### Dynamic partition Handling
+
+ifeq ($(SHIPPING_API_LEVEL),29)
+BOARD_SYSTEMSDK_VERSIONS:=29
+else
+BOARD_SYSTEMSDK_VERSIONS:=28
+endif
 
 BUILD_BROKEN_ANDROIDMK_EXPORTS=true
 BUILD_BROKEN_DUP_COPY_HEADERS=true
@@ -52,13 +66,12 @@ TARGET_NO_KERNEL := false
 -include vendor/qcom/prebuilt/msmnile/BoardConfigVendor.mk
 -include $(QCPATH)/common/msmnile/BoardConfigVendor.mk
 
-# Some framework code requires this to enable BT
-BOARD_HAVE_BLUETOOTH := true
-BOARD_USES_WIPOWER := true
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/qcom/common
-
 USE_OPENGL_RENDERER := true
 BOARD_USE_LEGACY_UI := true
+
+# Set Header version for bootimage
+BOARD_BOOTIMG_HEADER_VERSION := 1
+BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
 
 # Defines for enabling A/B builds
 AB_OTA_UPDATER := true
@@ -95,7 +108,7 @@ TARGET_RECOVERY_FSTAB := device/qcom/msmnile/recovery.fstab
 endif
 TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_BOOTIMAGE_PARTITION_SIZE := 0x06000000
-BOARD_USERDATAIMAGE_PARTITION_SIZE := 10737418240
+BOARD_USERDATAIMAGE_PARTITION_SIZE := 48318382080
 BOARD_PERSISTIMAGE_PARTITION_SIZE := 33554432
 BOARD_METADATAIMAGE_PARTITION_SIZE := 16777216
 BOARD_PREBUILT_DTBOIMAGE := out/target/product/msmnile/prebuilt_dtbo.img
@@ -216,9 +229,6 @@ USE_SENSOR_HAL_VER := 2.0
 #Add non-hlos files to ota packages
 ADD_RADIO_FILES := true
 
-#Generate DTBO image
-BOARD_KERNEL_SEPARATED_DTBO := true
-
 #Enable INTERACTION_BOOST
 TARGET_USES_INTERACTION_BOOST := true
 
@@ -235,10 +245,6 @@ endif
 ifeq ($(ENABLE_VENDOR_IMAGE), false)
   $(error "Vendor Image is mandatory !!")
 endif
-
-#Flag to enable System SDK Requirements.
-#All vendor APK will be compiled against system_current API set.
-BOARD_SYSTEMSDK_VERSIONS:=28
 
 BUILD_BROKEN_DUP_RULES := true
 
