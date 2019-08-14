@@ -35,8 +35,6 @@ else
 BOARD_SYSTEMSDK_VERSIONS:=28
 endif
 
-BUILD_BROKEN_ANDROIDMK_EXPORTS=true
-BUILD_BROKEN_DUP_COPY_HEADERS=true
 # TODO(b/124534788): Temporarily allow eng and debug LOCAL_MODULE_TAGS
 BUILD_BROKEN_ENG_DEBUG_TAGS := true
 
@@ -69,8 +67,17 @@ TARGET_NO_KERNEL := false
 USE_OPENGL_RENDERER := true
 BOARD_USE_LEGACY_UI := true
 
+#Disable appended dtb
+TARGET_KERNEL_APPEND_DTB := false
+
 # Set Header version for bootimage
+ifneq ($(strip $(TARGET_KERNEL_APPEND_DTB)),true)
+#Enable dtb in boot image and Set Header version
+BOARD_INCLUDE_DTB_IN_BOOTIMG := true
+BOARD_BOOTIMG_HEADER_VERSION := 2
+else
 BOARD_BOOTIMG_HEADER_VERSION := 1
+endif
 BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
 
 # Defines for enabling A/B builds
@@ -197,7 +204,6 @@ TARGET_NO_RPC := true
 TARGET_PLATFORM_DEVICE_BASE := /devices/soc.0/
 TARGET_INIT_VENDOR_LIB := libinit_msm
 
-TARGET_KERNEL_APPEND_DTB := true
 TARGET_COMPILE_WITH_MSM_KERNEL := true
 
 #Enable PD locater/notifier
