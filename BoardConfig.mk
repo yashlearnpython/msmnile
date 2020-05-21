@@ -3,6 +3,9 @@
 # Product-specific compile-time definitions.
 #
 
+# Set SYSTEMEXT_SEPARATE_PARTITION_ENABLE if was not already set (set earlier via build.sh).
+SYSTEMEXT_SEPARATE_PARTITION_ENABLE ?= false
+
 #Generate DTBO image
 BOARD_KERNEL_SEPARATED_DTBO := true
 
@@ -102,7 +105,11 @@ ifneq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
 TARGET_RECOVERY_FSTAB := device/qcom/msmnile/recovery_vendor_variant.fstab
 
 else
+ifeq ($(SYSTEMEXT_SEPARATE_PARTITION_ENABLE), true)
 TARGET_RECOVERY_FSTAB := device/qcom/msmnile/recovery_dynamic_partition.fstab
+else
+TARGET_RECOVERY_FSTAB := device/qcom/msmnile/recovery_dynamic_partition_noSysext.fstab
+endif
 endif
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_COPY_OUT_VENDOR := vendor
@@ -251,6 +258,7 @@ BUILD_BROKEN_DUP_RULES := true
 
 BUILD_BROKEN_NINJA_USES_ENV_VARS := SDCLANG_AE_CONFIG SDCLANG_CONFIG SDCLANG_SA_ENABLED SDCLANG_CONFIG_AOSP
 BUILD_BROKEN_NINJA_USES_ENV_VARS += TEMPORARY_DISABLE_PATH_RESTRICTIONS
+BUILD_BROKEN_NINJA_USES_ENV_VARS += RTIC_MPGEN
 BUILD_BROKEN_PREBUILT_ELF_FILES := true
 BUILD_BROKEN_USES_BUILD_HOST_SHARED_LIBRARY := true
 BUILD_BROKEN_USES_BUILD_HOST_STATIC_LIBRARY := true
