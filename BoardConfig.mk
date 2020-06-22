@@ -4,7 +4,7 @@
 #
 
 # Set SYSTEMEXT_SEPARATE_PARTITION_ENABLE if was not already set (set earlier via build.sh).
-SYSTEMEXT_SEPARATE_PARTITION_ENABLE ?= false
+SYSTEMEXT_SEPARATE_PARTITION_ENABLE = true
 
 #Generate DTBO image
 BOARD_KERNEL_SEPARATED_DTBO := true
@@ -19,7 +19,12 @@ TARGET_NO_RECOVERY := true
 BOARD_USES_RECOVERY_AS_BOOT := true
 else
 # Define the Dynamic Partition sizes and groups.
-BOARD_SUPER_PARTITION_SIZE := 12884901888
+ifeq ($(ENABLE_VIRTUAL_AB), true)
+     BOARD_SUPER_PARTITION_SIZE := 6442450944
+else
+     BOARD_SUPER_PARTITION_SIZE := 12884901888
+endif
+
 BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
 BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 6438256640
 BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor odm
@@ -171,6 +176,7 @@ ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
     endif
 endif
 
+BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
 TARGET_USES_ION := true
 TARGET_USES_NEW_ION_API :=true
 TARGET_USES_QCOM_BSP := false
@@ -258,6 +264,7 @@ BUILD_BROKEN_DUP_RULES := true
 
 BUILD_BROKEN_NINJA_USES_ENV_VARS := SDCLANG_AE_CONFIG SDCLANG_CONFIG SDCLANG_SA_ENABLED SDCLANG_CONFIG_AOSP
 BUILD_BROKEN_NINJA_USES_ENV_VARS += TEMPORARY_DISABLE_PATH_RESTRICTIONS
+BUILD_BROKEN_NINJA_USES_ENV_VARS += RTIC_MPGEN
 BUILD_BROKEN_PREBUILT_ELF_FILES := true
 BUILD_BROKEN_USES_BUILD_HOST_SHARED_LIBRARY := true
 BUILD_BROKEN_USES_BUILD_HOST_STATIC_LIBRARY := true
@@ -278,4 +285,4 @@ Q_BU_DISABLE_MODULE := true
 -include vendor/qcom/defs/board-defs/vendor/*.mk
 #################################################################################
 
-include device/qcom/sepolicy/SEPolicy.mk
+include device/qcom/sepolicy_vndr/SEPolicy.mk
