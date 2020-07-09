@@ -27,24 +27,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <manifest version="1.0" type="device" target-level="4">
     <hal format="hidl">
-        <name>android.hardware.boot</name>
-        <transport>hwbinder</transport>
-        <version>1.0</version>
-        <interface>
-            <name>IBootControl</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-    <hal format="hidl">
-        <name>android.hardware.health</name>
-        <transport>hwbinder</transport>
-        <version>2.0</version>
-        <interface>
-            <name>IHealth</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-    <hal format="hidl">
         <name>android.hardware.audio</name>
         <transport>hwbinder</transport>
         <version>6.0</version>
@@ -97,24 +79,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </interface>
     </hal>
    <!-- display -->
-    <hal format="hidl">
-        <name>android.hardware.graphics.composer</name>
-        <transport>hwbinder</transport>
-        <version>2.3</version>
-        <interface>
-            <name>IComposer</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-    <hal format="hidl">
-        <name>vendor.display.config</name>
-        <transport>hwbinder</transport>
-        <version>1.11</version>
-        <interface>
-            <name>IDisplayConfig</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
     <hal format="hidl">
         <name>vendor.display.color</name>
         <transport>hwbinder</transport>
@@ -434,6 +398,16 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          <instance>com.qualcomm.qti.uceservice</instance>
        </interface>
    </hal>
+   <!-- IMS CM Service -->
+   <hal format="hidl">
+        <name>com.qualcomm.qti.imscmservice</name>
+        <transport>hwbinder</transport>
+         <version>2.2</version>
+         <interface>
+             <name>IImsCmService</name>
+             <instance>qti.ims.connectionmanagerservice</instance>
+         </interface>
+    </hal>
    <!-- IMS callinfo Service -->
    <hal format="hidl">
        <name>vendor.qti.ims.callinfo</name>
@@ -459,19 +433,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <version>2.1</version>
         <interface>
             <name>IFactory</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-    <hal format="hidl">
-        <name>android.hardware.drm</name>
-        <transport>hwbinder</transport>
-        <version>1.0</version>
-        <interface>
-            <name>ICryptoFactory</name>
-            <instance>default</instance>
-        </interface>
-        <interface>
-            <name>IDrmFactory</name>
             <instance>default</instance>
         </interface>
     </hal>
@@ -522,6 +483,16 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <interface>
             <name>IHidlVppService</name>
             <instance>vppService</instance>
+        </interface>
+    </hal>
+    <!-- DSP Service -->
+    <hal format="hidl">
+        <name>vendor.qti.hardware.dsp</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IDspService</name>
+            <instance>dspservice</instance>
         </interface>
     </hal>
     <!-- Alarm HAL service -->
@@ -810,6 +781,16 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <interface>
             <name>IQccvndhal</name>
             <instance>qccvndhal</instance>
+        </interface>
+    </hal>
+    <!-- eMBMS HAL Service -->
+    <hal format="hidl">
+        <name>vendor.qti.hardware.embmssl</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IEmbms</name>
+            <instance>embmsslServer0</instance>
         </interface>
     </hal>
 </manifest>
