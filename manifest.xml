@@ -98,24 +98,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </interface>
     </hal>
     <hal format="hidl">
-        <name>android.hardware.configstore</name>
-        <transport>hwbinder</transport>
-        <version>1.1</version>
-        <interface>
-            <name>ISurfaceFlingerConfigs</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-    <hal format="hidl">
-        <name>android.hardware.light</name>
-        <transport>hwbinder</transport>
-        <version>2.0</version>
-        <interface>
-            <name>ILight</name>
-            <instance>default</instance>
-        </interface>
-    </hal>
-    <hal format="hidl">
         <name>android.hardware.memtrack</name>
         <transport>hwbinder</transport>
         <version>1.0</version>
@@ -133,15 +115,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <name>ITouchCompanion</name>
             <instance>TouchCompanionService</instance>
         </interface>
-    </hal>
-    <hal format="hidl">
-        <name>android.hardware.power</name>
-        <transport>hwbinder</transport>
-        <version>1.2</version>
-        <interface>
-            <name>IPower</name>
-            <instance>default</instance>
-       </interface>
     </hal>
     <hal format="hidl">
         <name>android.hardware.camera.provider</name>
@@ -255,7 +228,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <hal format="hidl">
         <name>vendor.qti.hardware.radio.ims</name>
            <transport>hwbinder</transport>
-           <version>1.5</version>
+           <version>1.6</version>
            <interface>
                <name>IImsRadio</name>
                <instance>imsradio0</instance>
@@ -332,7 +305,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <hal format="hidl">
         <name>vendor.qti.hardware.radio.qtiradio</name>
            <transport>hwbinder</transport>
-           <version>2.3</version>
+           <version>2.4</version>
            <interface>
                <name>IQtiRadio</name>
                <instance>slot1</instance>
@@ -467,7 +440,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    <hal format="hidl">
        <name>android.hardware.secure_element</name>
        <transport>hwbinder</transport>
-       <version>1.0</version>
+       <version>1.2</version>
        <interface>
            <name>ISecureElement</name>
            <instance>SIM1</instance>
@@ -522,6 +495,16 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <version>1.0</version>
         <interface>
             <name>INetPerfTuner</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <!-- FST manager service -->
+    <hal format="hidl">
+        <name>vendor.qti.hardware.fstman</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IFstManager</name>
             <instance>default</instance>
         </interface>
     </hal>
@@ -733,7 +716,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <hal format="hidl">
         <name>vendor.qti.hardware.bluetooth_sar</name>
         <transport>hwbinder</transport>
-        <version>1.0</version>
+        <version>1.1</version>
         <interface>
             <name>IBluetoothSar</name>
             <instance>default</instance>
