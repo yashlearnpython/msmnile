@@ -1,8 +1,5 @@
 LOCAL_PATH := $(call my-dir)
 
-# Set SYSTEMEXT_SEPARATE_PARTITION_ENABLE if was not already set (set earlier via build.sh).
-SYSTEMEXT_SEPARATE_PARTITION_ENABLE = true
-
 #----------------------------------------------------------------------
 # Compile (L)ittle (K)ernel bootloader and the nandwrite utility
 #----------------------------------------------------------------------
@@ -29,6 +26,14 @@ UFDT_APPLY_OVERLAY := $(HOST_OUT_EXECUTABLES)/ufdt_apply_overlay$(HOST_EXECUTABL
 # TODO(b/112561200) creating the TEMP_TOP variable undoes the intent of
 # removing ANDROID_BUILD_TOP, but it allows the build to succeed.
 TEMP_TOP=$(shell pwd)
+TARGET_KERNEL_MAKE_ARGS := DTC_EXT=$(TEMP_TOP)/$(DTC)
+TARGET_KERNEL_MAKE_ARGS += DTC_OVERLAY_TEST_EXT=$(TEMP_TOP)/$(UFDT_APPLY_OVERLAY)
+TARGET_KERNEL_MAKE_ARGS += CONFIG_BUILD_ARM64_DT_OVERLAY=y
+TARGET_KERNEL_MAKE_ARGS += HOSTCC=$(TEMP_TOP)/$(SOONG_LLVM_PREBUILTS_PATH)/clang
+TARGET_KERNEL_MAKE_ARGS += HOSTAR=$(TEMP_TOP)/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8/bin/x86_64-linux-ar
+TARGET_KERNEL_MAKE_ARGS += HOSTLD=$(TEMP_TOP)/prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8/bin/x86_64-linux-ld
+TARGET_KERNEL_DISABLE_DEBUGFS := true
+
 TARGET_KERNEL_MAKE_ENV := DTC_EXT=$(TEMP_TOP)/$(DTC)
 TARGET_KERNEL_MAKE_ENV += DTC_OVERLAY_TEST_EXT=$(TEMP_TOP)/$(UFDT_APPLY_OVERLAY)
 TARGET_KERNEL_MAKE_ENV += CONFIG_BUILD_ARM64_DT_OVERLAY=y
@@ -69,11 +74,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE       := fstab.qcom
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := ETC
-ifeq ($(SYSTEMEXT_SEPARATE_PARTITION_ENABLE), true)
 LOCAL_SRC_FILES    := fstab_dynamic_partition.qcom
-else
-LOCAL_SRC_FILES    := fstab_dynamic_partition_noSysext.qcom
-endif
 LOCAL_MODULE_PATH  := $(TARGET_OUT_VENDOR_ETC)
 include $(BUILD_PREBUILT)
 else

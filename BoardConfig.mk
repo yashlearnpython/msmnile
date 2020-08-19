@@ -3,9 +3,6 @@
 # Product-specific compile-time definitions.
 #
 
-# Set SYSTEMEXT_SEPARATE_PARTITION_ENABLE if was not already set (set earlier via build.sh).
-SYSTEMEXT_SEPARATE_PARTITION_ENABLE = true
-
 #Generate DTBO image
 BOARD_KERNEL_SEPARATED_DTBO := true
 
@@ -37,11 +34,7 @@ BOARD_EXT4_SHARE_DUP_BLOCKS := true
 endif
 ### Dynamic partition Handling
 
-ifeq ($(SHIPPING_API_LEVEL),29)
-BOARD_SYSTEMSDK_VERSIONS:=29
-else
-BOARD_SYSTEMSDK_VERSIONS:=28
-endif
+BOARD_SYSTEMSDK_VERSIONS:=$(SHIPPING_API_LEVEL)
 
 TARGET_BOARD_PLATFORM := msmnile
 TARGET_BOOTLOADER_BOARD_NAME := msmnile
@@ -108,13 +101,8 @@ ENABLE_VENDOR_IMAGE := true
 ifeq ($(ENABLE_VENDOR_IMAGE), true)
 ifneq ($(strip $(BOARD_DYNAMIC_PARTITION_ENABLE)),true)
 TARGET_RECOVERY_FSTAB := device/qcom/msmnile/recovery_vendor_variant.fstab
-
 else
-ifeq ($(SYSTEMEXT_SEPARATE_PARTITION_ENABLE), true)
 TARGET_RECOVERY_FSTAB := device/qcom/msmnile/recovery_dynamic_partition.fstab
-else
-TARGET_RECOVERY_FSTAB := device/qcom/msmnile/recovery_dynamic_partition_noSysext.fstab
-endif
 endif
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_COPY_OUT_VENDOR := vendor
@@ -136,6 +124,10 @@ BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
 #----------------------------------------------------------------------
 # Compile Linux Kernel
 #----------------------------------------------------------------------
+ifeq ($(TARGET_BUILD_VARIANT),user)
+     KERNEL_DEFCONFIG := $(shell ls ./kernel/msm-4.14/arch/arm64/configs/vendor/ | grep sm8...-perf_defconfig)
+endif
+
 ifeq ($(KERNEL_DEFCONFIG),)
      KERNEL_DEFCONFIG := $(shell ls ./kernel/msm-4.14/arch/arm64/configs/vendor/ | grep sm8..._defconfig)
 endif
