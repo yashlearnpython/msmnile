@@ -34,11 +34,7 @@ BOARD_EXT4_SHARE_DUP_BLOCKS := true
 endif
 ### Dynamic partition Handling
 
-ifeq ($(SHIPPING_API_LEVEL),29)
-BOARD_SYSTEMSDK_VERSIONS:=29
-else
-BOARD_SYSTEMSDK_VERSIONS:=28
-endif
+BOARD_SYSTEMSDK_VERSIONS:=$(SHIPPING_API_LEVEL)
 
 TARGET_BOARD_PLATFORM := msmnile
 TARGET_BOOTLOADER_BOARD_NAME := msmnile
@@ -128,6 +124,10 @@ BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
 #----------------------------------------------------------------------
 # Compile Linux Kernel
 #----------------------------------------------------------------------
+ifeq ($(TARGET_BUILD_VARIANT),user)
+     KERNEL_DEFCONFIG := $(shell ls ./kernel/msm-4.14/arch/arm64/configs/vendor/ | grep sm8...-perf_defconfig)
+endif
+
 ifeq ($(KERNEL_DEFCONFIG),)
      KERNEL_DEFCONFIG := $(shell ls ./kernel/msm-4.14/arch/arm64/configs/vendor/ | grep sm8..._defconfig)
 endif
